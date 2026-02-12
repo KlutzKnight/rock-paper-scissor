@@ -66,7 +66,7 @@ function playGame() {
     }
     
 
-
+    // Catch event when bubbling
     const btns = document.querySelector(".button-container");
     btns.addEventListener( "click", e => playRound(e.target.textContent) );
 
