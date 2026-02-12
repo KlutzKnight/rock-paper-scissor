@@ -81,4 +81,4 @@ function playGame() {
     displayWinner(computerScore, humanScore);
 }
 
-playGame();
+// playGame();
