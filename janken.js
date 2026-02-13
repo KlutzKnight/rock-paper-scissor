@@ -9,20 +9,22 @@ function getComputerChoice() {
         return "scissor";
 }
 
-function updateScore(computerScore, playerScore) {
+function displayScore(computerScore, playerScore) {
     const scoreDiv = document.querySelector(".score");
 
     scoreDiv.setAttribute('style', 'white-space: pre;');
     scoreDiv.textContent = `Computer Score: ${computerScore} \r\nPlayer Score: ${playerScore}`;
 }
 
-function displayWinner(computerScore, playerScore) {
-    if(computerScore > playerScore)
-        console.log("You Lose");
-    else if(computerScore < playerScore)
-        console.log("You Win");
-    else 
-        console.log("It's a Draw");
+function getWinner(computerScore, playerScore) {
+    if(computerScore != 5 && playerScore != 5)
+        return 0;
+
+    if(computerScore == 5)
+        return "Computer"
+    
+    else if(playerScore == 5)
+        return "Player"
 }
 
 function playGame() {
@@ -30,65 +32,73 @@ function playGame() {
     let computerScore = 0;
     let playerScore = 0;
     
-    updateScore(computerScore, playerScore);
+    const gameUpdate = document.querySelector(".game-updates");
+    gameUpdate.textContent = "Start Game";
+    displayScore(computerScore, playerScore);
 
-    //Plays a single round of rock-paper-scissor
+    // Plays a single round of rock-paper-scissor
     function playRound(playerChoice) {
-        playerChoice = playerChoice.toLowerCase();
         const computerChoice = getComputerChoice();
+        playerChoice = playerChoice.toLowerCase();
+        gameUpdate.setAttribute('style', 'white-space: pre;');
+        
         //Both chose the same, i.e. Draw
         if(computerChoice == playerChoice) {
-            console.log(`It's a Tie! Both chose ${computerChoice}`);
+            gameUpdate.textContent = `It's a Tie! Both chose ${computerChoice}`;
         }
         //Compuer chose "Rock"
         else if(computerChoice == "rock") {
             if(playerChoice == "paper") {
-                console.log(`You Win! ${playerChoice} beats ${computerChoice}`);
+                gameUpdate.textContent = `You Win! ${playerChoice} beats ${computerChoice}`;
                 playerScore++;
             } else {
-                console.log(`You Lose :( ${computerChoice} beats ${playerChoice}`);
+                gameUpdate.textContent = `You Lose :( ${computerChoice} beats ${playerChoice}`;
                 computerScore++;
             }
         }
         //Computer chose "Paper"
         else if (computerChoice == "paper") {
             if(playerChoice == "scissor") {
-                console.log(`You Win! ${playerChoice} beats ${computerChoice}`);
+                gameUpdate.textContent = `You Win! ${playerChoice} beats ${computerChoice}`;
                 playerScore++;
             } else {
-                console.log(`You Lose :( ${computerChoice} beats ${playerChoice}`);
+                gameUpdate.textContent = `You Lose :( ${computerChoice} beats ${playerChoice}`;
                 computerScore++;
             }
         }
         //Computer chose "Scissor"
         else {
             if(playerChoice == "rock") {
-                console.log(`You Win! ${playerChoice} beats ${computerChoice}`);
+                gameUpdate.textContent = `You Win! ${playerChoice} beats ${computerChoice}`;
                 playerScore++;
             } else {
-                console.log(`You Lose :( ${computerChoice} beats ${playerChoice}`);
+                gameUpdate.textContent = `You Lose :( ${computerChoice} beats ${playerChoice}`;
                 computerScore++;
             }
         }
-        updateScore(computerScore, playerScore);
+
+        displayScore(computerScore, playerScore);
+        winner = getWinner(computerScore, playerScore);
+        if(winner != 0) {
+            //Display the winner and reset the game
+            resetGame(winner);
+        }
     }
 
+    function resetGame(winner) {
+        gameUpdate.textContent = `${winner} has won\r\n`;
+        computerScore = 0;
+        playerScore = 0;
+        gameUpdate.textContent += "Game Over";
+    }
 
     // Catch event when bubbling
     const btns = document.querySelector(".button-container");
-    btns.addEventListener( "click", e => playRound(e.target.textContent) );
-
-    
-    // for(let i = 0; i < 5; i++) {
-        
-    //     let playerChoice = getPlayerChoice();
-    //     let computerSelection = getComputerChoice();
-
-    //     playRound(computerSelection, playerChoice);
-    // }
-    
-    // console.log(`Player --> ${playerScore}, Computer --> ${computerScore}`);
-    // displayWinner(computerScore, playerScore);
+    btns.addEventListener( "click" , (e) => {
+        const button = e.target.closest("button");
+        if(button && btns.contains(button))
+            playRound(e.target.textContent);
+    } );
 }
 
 
