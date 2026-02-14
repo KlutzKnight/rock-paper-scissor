@@ -1,3 +1,9 @@
+// Get all permanent stuff now
+const buttonsContainer = document.querySelector(".buttons-container");
+const gameUpdate = document.querySelector(".game-updates");
+const scoreDiv = document.querySelector(".score");
+
+
 //Randomly generates computer's choice
 function getComputerChoice() {
     let computerChoice = Math.floor(Math.random() * 3);
@@ -10,37 +16,49 @@ function getComputerChoice() {
 }
 
 function displayScore(computerScore, playerScore) {
-    const scoreDiv = document.querySelector(".score");
-
-    scoreDiv.setAttribute('style', 'white-space: pre;');
     scoreDiv.textContent = `Computer Score: ${computerScore} \r\nPlayer Score: ${playerScore}`;
 }
 
 function getWinner(computerScore, playerScore) {
-    if(computerScore != 5 && playerScore != 5)
-        return 0;
+    if(computerScore == 5) 
+        return "Computer";
+    if(playerScore == 5) 
+        return "Player";
 
-    if(computerScore == 5)
-        return "Computer"
-    
-    else if(playerScore == 5)
-        return "Player"
+    return "None";
 }
 
 function playGame() {
     // Variables for Score Keeping
     let computerScore = 0;
     let playerScore = 0;
-    
-    const gameUpdate = document.querySelector(".game-updates");
-    gameUpdate.textContent = "Start Game";
     displayScore(computerScore, playerScore);
+
+
+
+    function createChoiceButtons(choice) {
+        // Catch event when bubbling
+        const choiceButton = document.createElement("button");
+        choiceButton.textContent = choice;
+        choiceButton.classList.add("choice-button");
+        choiceButton.addEventListener("click" , () => playRound(choice) );
+        buttonsContainer.appendChild(choiceButton);
+    }
+    
+    function displayWinner(winner) {
+        if(winner == "Player")
+            gameUpdate.textContent = `Congratulations, You Won!!!\r\n`;
+        else
+            gameUpdate.textContent = `You lost :( Better luck next time.\r\n`;
+        
+        gameUpdate.textContent += "Game Over";
+    }
 
     // Plays a single round of rock-paper-scissor
     function playRound(playerChoice) {
         const computerChoice = getComputerChoice();
         playerChoice = playerChoice.toLowerCase();
-        gameUpdate.setAttribute('style', 'white-space: pre;');
+        
         
         //Both chose the same, i.e. Draw
         if(computerChoice == playerChoice) {
@@ -77,29 +95,37 @@ function playGame() {
             }
         }
 
-        displayScore(computerScore, playerScore);
-        winner = getWinner(computerScore, playerScore);
-        if(winner != 0) {
-            //Display the winner and reset the game
-            resetGame(winner);
+        // Check for winner and reset the game
+        const winner = getWinner(computerScore, playerScore);
+        if(winner != "None") {
+            //Display the winner
+            displayWinner(winner);
+
+            const retryButton = document.createElement("button");
+            retryButton.classList.add("action-button");
+            retryButton.textContent = "Retry";
+            retryButton.addEventListener("click", (e) => {
+                playGame();
+            });
+            buttonsContainer.innerHTML = "";
+            buttonsContainer.appendChild(retryButton);
         }
+
+        displayScore(computerScore, playerScore);
     }
 
-    function resetGame(winner) {
-        gameUpdate.textContent = `${winner} has won\r\n`;
-        computerScore = 0;
-        playerScore = 0;
-        gameUpdate.textContent += "Game Over";
-    }
 
-    // Catch event when bubbling
-    const btns = document.querySelector(".button-container");
-    btns.addEventListener( "click" , (e) => {
-        const button = e.target.closest("button");
-        if(button && btns.contains(button))
-            playRound(e.target.textContent);
-    } );
+    buttonsContainer.innerHTML = "";
+    createChoiceButtons("Rock");
+    createChoiceButtons("Paper");
+    createChoiceButtons("Scissor");
 }
 
-
-playGame();
+// Create a Start Game button and append it to container
+const startButton = document.createElement("button");
+startButton.classList.add("action-button");
+startButton.textContent = "Start Game";
+startButton.addEventListener("click", (e) => {
+    playGame();
+});
+buttonsContainer.appendChild(startButton);
